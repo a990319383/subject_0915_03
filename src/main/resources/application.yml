@@ -1,11 +1,16 @@
 server:
   port: 8080
+  tomcat:
+    threads:
+      max: 250
 
 spring:
   application:
     name: evops-base
   profiles:
     active: dev
+  aop:
+    proxy-target-class: true
   jackson:
     time-zone: Asia/Shanghai
     serialization:
@@ -15,6 +20,10 @@ spring:
     username: sa
     password:
     driver-class-name: org.h2.Driver
+    hikari:
+      maximum-pool-size: 40
+      minimum-idle: 10
+      connection-timeout: 10000
   h2:
     console:
       enabled: false
@@ -28,6 +37,28 @@ mybatis-plus:
   type-aliases-package: com.evops
   configuration:
     map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+# 不使用 Shiro 注解式鉴权（仅 URL 过滤链），关闭其注解代理处理器，
+# 避免与事务代理叠加产生 JDK 代理导致按类型注入失败。
+shiro:
+  annotations:
+    enabled: false
+
+# 台账种子数据：mvn spring-boot:run -Dspring-boot.run.arguments=--evops.seed.enabled=true
+evops:
+  seed:
+    enabled: false
+    order-count: 85000
+    store-count: 2
+    bays-per-store: 10
+    card-count: 5000
+    card-times: 30
+    batch-size: 1000
 
 logging:
   level:
